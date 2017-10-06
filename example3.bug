@@ -1,0 +1,6 @@
+model {
+	for (i in 1:N){
+		x[i] ~ dbern(p)
+	}
+	p ~ dbeta(6, 4)
+}
