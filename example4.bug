@@ -1,0 +1,13 @@
+model {
+    for( i in 1 : N ) {
+      ModelIndex[i] ~ dbern(p)
+      mix[i,1] ~ dnorm(mu1,tau)
+      mix[i,2] ~ dnorm(mu2,tau)
+      Data[i] <- mix[i,ModelIndex[i]+1]
+    }
+    p<- 1/2
+  	tau <- pow(sigma, -2)
+	sigma ~ dunif(0, 100)
+    mu1 ~ dnorm(0,.01)
+    mu2 ~ dnorm(50,.01)
+}

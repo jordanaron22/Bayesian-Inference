@@ -1,0 +1,48 @@
+---
+title: "jagsv2"
+author: "Jordan Aron"
+date: "October 5, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+N <- 2000
+
+
+x <- numeric(N)
+for (i in 1:N){
+  if (i%%2 == 0) {
+    x[i] <- rnorm(1,0,10)
+  } else  {
+    x[i] <- rnorm(1,50,10)
+  }
+  
+}
+
+plot(density(x))
+
+```
+
+```{r}
+library('rjags')
+ 
+jags <- jags.model('example4.bug',
+                   data = list('x' = x,
+                               'N' = N),
+                   n.chains = 4,
+                   n.adapt = 100)
+ 
+update(jags, N)
+ 
+jags.samples(jags,
+             c('mu1','mu2', 'tau'),
+             N)
+smpls <- coda.samples(jags, c('mu1','mu2','tau'), 2000)
+plot(smpls)
+```
+
