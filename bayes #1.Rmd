@@ -1,0 +1,94 @@
+---
+title: "Bayes"
+author: "Jordan Aron"
+date: "September 21, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Posteior 
+
+
+```{r, echo=FALSE}
+x <- seq(0, 1, length=10000)
+a = 1
+b = 1
+prior <- dbeta(x,a,b)
+y = 42 + 43 + 37 + 43 + 43 + 42 + 39 + 41 + 41
+noty = 53 + 52 + 56 + 55 + 51 + 48 + 55 + 50 + 55
+n = y + noty
+sample.prop = y / n
+posterior <- dbeta(x, a + y, b + noty)
+par(mfrow=c(2,2))
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue", main="a = 1, b = 1")
+points(x,prior, type = "l", col = "orange")
+
+
+a = 40
+b = 60
+prior <- dbeta(x,a,b)
+posterior <- dbeta(x, a + y, b + noty)
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue",main="a = 40, b= 60" )
+points(x,prior, type = "l", col = "orange")
+
+a = 150
+b = 150
+prior <- dbeta(x,a,b)
+posterior <- dbeta(x, a + y, b + noty)
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue", main="a = 150, b= 150" )
+points(x,prior, type = "l", col = "orange")
+
+a = 400
+b = 600
+prior <- dbeta(x,a,b)
+posterior <- dbeta(x, a + y, b + noty)
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue",main="a = 400, b= 600" )
+points(x,prior, type = "l", col = "orange")
+```
+
+
+
+Bad priors.  
+```{r, echo=FALSE}
+par(mfrow=c(2,2))
+b = 40
+a = 60
+prior <- dbeta(x,a,b)
+posterior <- dbeta(x, a + y, b + noty)
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue", main="a = 60, b= 40" )
+points(x,prior, type = "l", col = "orange")
+
+b = 400
+a = 600
+prior <- dbeta(x,a,b)
+posterior <- dbeta(x, a + y, b + noty)
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue",main="a = 600, b= 400")
+points(x,prior, type = "l", col = "orange")
+
+b = 20
+a = 80
+prior <- dbeta(x,a,b)
+posterior <- dbeta(x, a + y, b + noty)
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue",main="a = 80, b= 20")
+points(x,prior, type = "l", col = "orange")
+
+b = 200
+a = 800
+prior <- dbeta(x,a,b)
+posterior <- dbeta(x, a + y, b + noty)
+plot(x,posterior,xlab = "X Value", ylab = "Density", type = "l", col = "blue",main="a = 800, b= 200" )
+points(x,prior, type = "l", col = "orange")
+```
+
+95% confidence region
+```{r}
+qbeta(c(.025,.975), 40 + y, 60 + noty)
+sample.prop
+```
+
+Using betaHPD, the HPD region is (.402937, .4660623)
