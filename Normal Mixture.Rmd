@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
-N <- 2000
+N <- 100000
 
 
 x <- numeric(N)
@@ -24,7 +24,7 @@ for (i in 1:N){
   
 }
 
-plot(density(x))
+#plot(density(x))
 
 ```
 
@@ -34,15 +34,45 @@ library('rjags')
 jags <- jags.model('example4.bug',
                    data = list('x' = x,
                                'N' = N),
-                   n.chains = 4,
+                   n.chains = 1,
                    n.adapt = 100)
  
 update(jags, N)
  
-jags.samples(jags,
-             c('mu1','mu2', 'tau'),
-             N)
-smpls <- coda.samples(jags, c('mu1','mu2','tau'), 2000)
+#jags.samples(jags,
+#             c('mu1','mu2', 'tau', ),
+#             N)
+smpls <- coda.samples(jags, c('mu1','mu2','tau', 'p'), 50)
 plot(smpls)
 ```
 
+
+
+
+Gibbs sampler entirely in R
+```{r}
+#mu1 mu2 sigma1 sigma2 p z x 
+trials <- 10000
+simlist <- matrix (rep(0,7*trials), ncol = 7)
+simlist[1,5] <- runif(1)
+ybar1 <- 0
+ybar2 <- 50
+for (i in 2:trials){
+  simlist[i,1] <- rnorm(1, ybar1, 10)
+  simlist[i,2] <- rnorm(1, ybar2, 10)
+
+
+  #simlist[i,5] <- runif(1)
+  if (i < 500){
+    simlist[i,5] <- runif(1)
+  } else {
+    simlist[i,5] <- mean(simlist[1:i-1,6])
+  }
+  simlist[i,6] <- rbinom(1,1,simlist[i,5])
+  if (simlist[i,6] == 1){
+    simlist[i,7] <- rnorm(1,simlist[i,1],10)
+  } else {
+    simlist[i,7] <- rnorm(1,simlist[i,2],10)
+  }
+}
+```
