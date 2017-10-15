@@ -1,0 +1,75 @@
+---
+title: "Untitled"
+author: "Jordan Aron"
+date: "October 15, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#p z x tau1 tau2 mu1 mu2 
+obs1 <- 500
+obs2 <- 500
+
+samp1 <- rnorm(obs1,0,10)
+samp2 <- rnorm(obs2,200,10)
+
+#meansamp1 <- mean(samp1)
+#meansamp2 <- mean(samp2)
+
+#ssdm1 <- sum((samp1 - meansamp1)^2)/(obs1-1)
+#ssdm2 <- sum((samp2 - meansamp2)^2)/(obs2-1)
+
+pop1 <- samp1
+pop2 <- samp2
+
+trials <- 10000
+simlist <- matrix(rep(0,7*trials), ncol = 7)
+simlist[1,1] <- runif(1)
+simlist[1,2] <- 1
+success = 20
+failure = 20
+for(i in 2:trials){
+  simlist[i,1] <- rbeta(1,success, failure )
+  simlist[i,2] <- rbinom(1,1,simlist[i,1])
+  
+  #if (i < 500){
+   # simlist[i,3] <- (simlist[i,2])*rnorm(1,meansamp1,(ssdm1/2 * (obs1+1))/(obs1 * (obs1/2))) +      (1-simlist[i,2])*rnorm(1,meansamp2,(ssdm2/2 * (obs2+1))/(obs2 * (obs2/2)))
+    
+ # } else {
+    simlist[i,3] <- (simlist[i,2])*rnorm(1,simlist[i-1,6], simlist[i-1,4]) + (1-simlist[i,2])*rnorm(1, simlist[i-1,7], simlist[i-1,5] )
+  #}
+  
+  sigma1 <- rgamma(1, length(pop1)/2, (length(pop1/2)*var(pop1)))
+  simlist[i,4] <- 1/sqrt(sigma1)
+  
+  sigma2 <- rgamma(1, length(pop2)/2, (length(pop2/2)*var(pop2)))
+  simlist[i,5] <- 1/sqrt(sigma2)
+  
+  simlist[i,6] <- rnorm(1,mean(pop1),simlist[i,4]/sqrt(length(pop1)))
+  simlist[i,7] <- rnorm(1,mean(pop2),simlist[i,5]/sqrt(length(pop2)))
+  
+  
+  if (simlist[i,2] == 1) {
+    success = success + 1
+    pop1 <- c(pop1,simlist[i,3])
+  } else {
+    failure = failure + 1
+    pop2 <- c(pop2,simlist[i,3])
+  }
+}
+
+
+plot(density(simlist[,1]), main = "Distribution of p")
+plot(density(simlist[,3]),main = "Distribution of x")
+plot(density(simlist[,4]),main = "Distribution of sigma1")
+plot(density(simlist[,5]),main = "Distribution of sigma2")
+plot(density(simlist[,6]),main = "Distribution of mu1")
+plot(density(simlist[,7]),main = "Distribution of mu2")
+
+
+```
