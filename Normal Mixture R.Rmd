@@ -103,20 +103,20 @@ gibbs.MH <- function(data, trials, use.MH){
       #metropolis hastings algorithm to calculate p
       #constant, larger values allow larger skips, but also can produce NaN
       variance.constant = .0005
-      c = ((p.star*(1-p.star)/variance.constant) - 1)*(1 - p.star)
-      d = c*(p.star/(1-p.star))
+      c = ((p*(1-p)/variance.constant) - 1)*(1 - p)
+      d = c*(p/(1-p))
       p.star = rbeta(1,d,c)
       
       #The algorithm ran into problems with really large and small values of p.star
       #Played around with these values, using 0.01 and 0.99 produced a weird shaped gamma for the next time around
       #doesnt impact calculations done later
       #One caveat is this method can't be used on a population where p is extrmeley small 
-      if (p.star < 0.03){
-        p.star <- 0.03
-      }
-      if (p.star > 0.97){
-        p.star <- 0.97
-      }
+      # if (p.star < 0.03){
+      #   p.star <- 0.03
+      # }
+      # if (p.star > 0.97){
+      #   p.star <- 0.97
+      # }
       metro.log <- (log(p.star^sum(z)) + log((1-p.star)^(n-sum(z))) + log(sin(5*pi*p.star)^2)) - (log(p^sum(z)) + log((1-p)^(n-sum(z))) + log(sin(5*pi*p)^2))
       hast.log <- log(dbeta(p.star,d,c)) - log(dbeta(p,d,c))
       r.log <- metro.log + hast.log
